@@ -9,7 +9,9 @@ setup(
     description='Automatic configuration of Django projects based on the application requirements.',
     author='Mike Bryant',
     author_email='mike@mikebryant.me.uk',
+    install_requires=['django'],
     include_package_data=True,
+    test_suite='tests',
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
