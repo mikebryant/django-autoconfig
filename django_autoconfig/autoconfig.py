@@ -29,13 +29,9 @@ def merge_dictionaries(current, new):
                     current[key] = list(current_value) + [element]
                     changes += 1
         else:
-            print dir(current_value)
-            raise ImproperlyConfigured(
-                "Unable to merge into %s (type %s)" % (
-                    current_value,
-                    type(current_value),
-                )
-            )
+            # If we don't know what to do with it, replace it.
+            if current_value != value:
+                current[key] = value
     return changes
 
 def configure_settings(settings):

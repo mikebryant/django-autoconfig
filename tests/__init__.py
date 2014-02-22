@@ -54,3 +54,25 @@ class ConfigureSettingsTestCase(unittest.TestCase):
         autoconfig.configure_settings(self.settings)
         self.assertIn('my.middleware', self.settings['MIDDLEWARE_CLASSES'])
         self.assertIn('django.middleware.common.CommonMiddleware', self.settings['MIDDLEWARE_CLASSES'])
+
+    def test_no_autoconfig(self):
+        '''
+        An app with no autoconfig shouldn't break things.
+        '''
+        self.settings['INSTALLED_APPS'] = ['tests.app_no_autoconfig']
+        autoconfig.configure_settings(self.settings)
+
+    def test_blank_autoconfig(self):
+        '''
+        An app with a blank autoconfig shouldn't break things.
+        '''
+        self.settings['INSTALLED_APPS'] = ['tests.app_blank_autoconfig']
+        autoconfig.configure_settings(self.settings)
+
+    def test_booleans(self):
+        '''
+        Things we can't merge just get replaced.
+        '''
+        self.settings['INSTALLED_APPS'] = ['tests.app_boolean']
+        autoconfig.configure_settings(self.settings)
+        self.assertEqual(self.settings['DEBUG'], True)
