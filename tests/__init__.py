@@ -2,7 +2,7 @@
 # pylint: disable=C0103
 # pylint: disable=R0904
 
-import django_autoconfig
+from django_autoconfig import autoconfig
 
 import copy
 import unittest
@@ -30,5 +30,5 @@ class ConfigureSettingsTestCase(unittest.TestCase):
         '''
 
         self.settings['INSTALLED_APPS'] = ['tests.app_list']
-        django_autoconfig.configure_settings(self.settings)
+        autoconfig.configure_settings(self.settings)
         self.assertEqual(self.settings['LIST_SETTING'], [1, 2, 3])
