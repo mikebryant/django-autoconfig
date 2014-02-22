@@ -32,6 +32,7 @@ def merge_dictionaries(current, new):
             # If we don't know what to do with it, replace it.
             if current_value != value:
                 current[key] = value
+                changes += 1
     return changes
 
 def configure_settings(settings):
@@ -41,19 +42,26 @@ def configure_settings(settings):
     '''
     changes = 0
     old_changes = None
+    num_apps = 0
+    old_num_apps = len(settings['INSTALLED_APPS'])
 
     while changes or old_changes is None:
         changes = 0
-
         for app_name in settings['INSTALLED_APPS']:
             try:
                 module = importlib.import_module("%s.autoconfig" % (app_name,))
             except ImportError:
                 continue
-            merge_dictionaries(settings, getattr(module, 'SETTINGS', {}))
+            changes += merge_dictionaries(settings, getattr(module, 'SETTINGS', {}))
+        num_apps = len(settings['INSTALLED_APPS'])
 
-        if old_changes is not None and old_changes >= changes:
+        if (
+            old_changes is not None and
+            changes >= old_changes and
+            num_apps == old_num_apps
+        ):
             raise ImproperlyConfigured(
                 'Autoconfiguration could not reach a consistent state'
             )
         old_changes = changes
+        old_num_apps = num_apps

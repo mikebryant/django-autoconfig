@@ -5,13 +5,11 @@
 from django_autoconfig import autoconfig
 
 import copy
+from django.core.exceptions import ImproperlyConfigured
 try:
     from django.utils import unittest
 except ImportError:
     import unittest
-
-import logging
-LOGGER = logging.getLogger(__name__)
 
 class ConfigureSettingsTestCase(unittest.TestCase):
     '''Test the configure_settings method.'''
@@ -76,3 +74,11 @@ class ConfigureSettingsTestCase(unittest.TestCase):
         self.settings['INSTALLED_APPS'] = ['tests.app_boolean']
         autoconfig.configure_settings(self.settings)
         self.assertEqual(self.settings['DEBUG'], True)
+
+    def test_inconsistency(self):
+        '''
+        Check for required inconsistencies.
+        '''
+        self.settings['INSTALLED_APPS'] = ['tests.app_boolean', 'tests.app_boolean_inconsistent']
+        with self.assertRaises(ImproperlyConfigured):
+            autoconfig.configure_settings(self.settings)
