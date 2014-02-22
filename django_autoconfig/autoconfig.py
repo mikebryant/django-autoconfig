@@ -12,13 +12,13 @@ def merge_dictionaries(current, new):
 
     '''
     changes = 0
-    for key, value in new.iteritems():
+    for key, value in new.items():
         if key not in current:
             current[key] = copy.deepcopy(value)
             changes += 1
             continue
         current_value = current[key]
-        if hasattr(current_value, 'iteritems'):
+        if hasattr(current_value, 'items'):
             changes += merge_dictionaries(current_value, value)
         elif hasattr(current_value, 'append'):
             for element in value:
