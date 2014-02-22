@@ -1,7 +1,9 @@
 '''Automatic configuration for Django project.'''
 
+import collections
 import copy
 from django.core.exceptions import ImproperlyConfigured
+from django.conf import global_settings
 import importlib
 
 def merge_dictionaries(current, new):
@@ -12,22 +14,26 @@ def merge_dictionaries(current, new):
     changes = 0
     for key, value in new.items():
         if key not in current:
-            current[key] = copy.deepcopy(value)
-            changes += 1
-            continue
+            if hasattr(global_settings, key):
+                current[key] = getattr(global_settings, key)
+            else:
+                current[key] = copy.deepcopy(value)
+                changes += 1
+                continue
         current_value = current[key]
         if hasattr(current_value, 'items'):
             changes += merge_dictionaries(current_value, value)
-        elif hasattr(current_value, 'append'):
+        elif isinstance(current_value, collections.Sequence):
             for element in value:
                 if element not in current_value:
-                    current_value.append(element)
+                    current[key] = list(current_value) + [element]
                     changes += 1
         else:
+            print dir(current_value)
             raise ImproperlyConfigured(
-                "Unable to merge %s (type %s)" % (
-                    value,
-                    type(value),
+                "Unable to merge into %s (type %s)" % (
+                    current_value,
+                    type(current_value),
                 )
             )
     return changes
