@@ -2,9 +2,7 @@
 
 import copy
 from django.core.exceptions import ImproperlyConfigured
-import collections
 import importlib
-import inspect
 
 def merge_dictionaries(current, new):
     '''
