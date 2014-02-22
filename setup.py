@@ -2,6 +2,15 @@
 from setuptools import setup
 from django_autoconfig.version import __VERSION__
 
+import sys
+
+INSTALL_REQUIRES = [
+    'django',
+]
+
+if sys.version_info < (2, 7):
+    INSTALL_REQUIRES.append('importlib')
+
 setup(
     name='django-autoconfig',
     version=__VERSION__,
@@ -9,7 +18,7 @@ setup(
     description='Automatic configuration of Django projects based on the application requirements.',
     author='Mike Bryant',
     author_email='mike@mikebryant.me.uk',
-    install_requires=['django'],
+    install_requires=INSTALL_REQUIRES,
     include_package_data=True,
     test_suite='tests',
     classifiers=[
