@@ -82,3 +82,14 @@ class ConfigureSettingsTestCase(unittest.TestCase):
         self.settings['INSTALLED_APPS'] = ['tests.app_boolean', 'tests.app_boolean_inconsistent']
         with self.assertRaises(ImproperlyConfigured):
             autoconfig.configure_settings(self.settings)
+
+    def test_relationship(self):
+        '''
+        Test putting things somewhere other than at the end of the list.
+        '''
+        self.settings['INSTALLED_APPS'] = ['app1', 'app2', 'tests.app_relationship']
+        autoconfig.configure_settings(self.settings)
+        self.assertEqual(
+            self.settings['INSTALLED_APPS'],
+            ['tests.app_relationship', 'app1', 'app3', 'app2'],
+        )
