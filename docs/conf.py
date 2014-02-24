@@ -13,6 +13,9 @@
 import sys, os
 from gitversion import get_git_version
 
+sys.path.insert(0, '../')
+from django_autoconfig.version import __VERSION__
+
 intersphinx_mapping = {
     'django': ('http://docs.djangoproject.com/en/dev/', 'http://docs.djangoproject.com/en/dev/_objects/'),
 }
@@ -51,7 +54,7 @@ copyright = u'2014, Mike Bryant'
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
-git_version = get_git_version(__file__)
+git_version = __VERSION__
 # The short X.Y version.
 version = git_version.split('-')[0]
 # The full version, including alpha/beta/rc tags.
