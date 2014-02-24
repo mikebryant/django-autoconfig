@@ -25,8 +25,8 @@ django-autoconfig
     :target: https://pypi.python.org/pypi/django-autoconfig/
     :alt: License Badge
 
-Automatic configuration of django projects based on INSTALLED_APP's requirements
+Automatic configuration of Django projects based on the requirements of apps in the INSTALLED_APP setting.
 
-Usage
-=====
-TODO
+Official docs can be found at `Read the Docs`_.
+
+.. _`Read the Docs`: https://django-autoconfig.readthedocs.org
