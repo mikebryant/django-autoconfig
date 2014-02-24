@@ -18,7 +18,7 @@ Import ``django_autoconfig`` in ``settings.py``, and call ``configure_settings``
     ``configure_settings`` must be run after ``INSTALLED_APPS`` is defined.
 
 In your app, define a ``autoconfig`` module, that contains the settings you need defined, or the app's requirements::
-    
+
     SETTINGS = {
         'MY_APP_MUST_HAVE_THIS_VARIABLE_SET': False,
     }
