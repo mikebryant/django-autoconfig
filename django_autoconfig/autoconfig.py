@@ -13,6 +13,7 @@ class OrderingRelationship(object):
     that's a list and one or more other entries.
 
     It's intended to be used in an autoconfig.py file like so::
+
         RELATIONSHIPS = [
             OrderingRelationship(
                 'INSTALLED_APPS',
