@@ -11,7 +11,6 @@
 # serve to show the default.
 
 import sys, os
-from gitversion import get_git_version
 
 sys.path.insert(0, '../')
 from django_autoconfig.version import __VERSION__
