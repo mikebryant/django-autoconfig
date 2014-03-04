@@ -73,7 +73,7 @@ class OrderingRelationship(object):
 
         return changes
 
-def merge_dictionaries(current, new):
+def merge_dictionaries(current, new, only_defaults=False):
     '''
     Merge two settings dictionaries, recording how many changes were needed.
 
@@ -87,6 +87,8 @@ def merge_dictionaries(current, new):
                 current[key] = copy.deepcopy(value)
                 changes += 1
                 continue
+        elif only_defaults:
+            continue
         current_value = current[key]
         if hasattr(current_value, 'items'):
             changes += merge_dictionaries(current_value, value)
@@ -119,7 +121,15 @@ def configure_settings(settings):
                 module = importlib.import_module("%s.autoconfig" % (app_name,))
             except ImportError:
                 continue
-            changes += merge_dictionaries(settings, getattr(module, 'SETTINGS', {}))
+            changes += merge_dictionaries(
+                settings,
+                getattr(module, 'SETTINGS', {}),
+            )
+            changes += merge_dictionaries(
+                settings,
+                getattr(module, 'DEFAULT_SETTINGS', {}),
+                only_defaults=True,
+            )
             for relationship in getattr(module, 'RELATIONSHIPS', []):
                 changes += relationship.apply_changes(settings)
         num_apps = len(settings['INSTALLED_APPS'])

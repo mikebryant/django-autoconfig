@@ -93,6 +93,24 @@ class ConfigureSettingsTestCase(test.TestCase):
             ['django_autoconfig.tests.app_relationship', 'app1', 'app3', 'app2'],
         )
 
+    def test_default_setting(self):
+        '''
+        A setting in the DEFAULTS section should be used like merging.
+        '''
+        self.settings_dict['INSTALLED_APPS'] = ['django_autoconfig.tests.app_default_settings']
+        autoconfig.configure_settings(self.settings_dict)
+        self.assertEqual(self.settings_dict['DEFAULT_SETTING'], [1, 2, 3])
+
+    def test_default_existing_setting(self):
+        '''
+        A setting in the DEFAULTS section should only be used if
+        it doesn't already exist.
+        '''
+        self.settings_dict['INSTALLED_APPS'] = ['django_autoconfig.tests.app_default_settings']
+        self.settings_dict['DEFAULT_SETTING'] = [4, 5, 6]
+        autoconfig.configure_settings(self.settings_dict)
+        self.assertEqual(self.settings_dict['DEFAULT_SETTING'], [4, 5, 6])
+
 class ConfigureUrlsTestCase(test.TestCase):
     '''Test the autoconfiguration of the urlconf.'''
     urls = 'django_autoconfig.autourlconf'
