@@ -6,7 +6,9 @@ from django_autoconfig import autoconfig
 
 import copy
 from django.core.exceptions import ImproperlyConfigured
+from django.core.urlresolvers import resolve
 from django import test
+from django.test.utils import override_settings
 
 class ConfigureSettingsTestCase(test.TestCase):
     '''Test the configure_settings method.'''
@@ -90,3 +92,12 @@ class ConfigureSettingsTestCase(test.TestCase):
             self.settings_dict['INSTALLED_APPS'],
             ['django_autoconfig.tests.app_relationship', 'app1', 'app3', 'app2'],
         )
+
+class ConfigureUrlsTestCase(test.TestCase):
+    '''Test the autoconfiguration of the urlconf.'''
+    urls = 'django_autoconfig.autourlconf'
+
+    @override_settings(INSTALLED_APPS=['django_autoconfig.tests.app_urls'])
+    def test_urls(self):
+        '''Test a simple url autoconfiguration.'''
+        resolve('/django-autoconfig.tests.app-urls/index/')
