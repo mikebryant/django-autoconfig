@@ -20,7 +20,8 @@ setup(
     author_email='mike@mikebryant.me.uk',
     install_requires=INSTALL_REQUIRES,
     include_package_data=True,
-    test_suite='tests',
+    test_suite           = 'setuptest.setuptest.SetupTestSuite',
+    tests_require        = ['django-setuptest'],
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
