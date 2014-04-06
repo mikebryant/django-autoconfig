@@ -138,7 +138,7 @@ class ConfigureSettingsTestCase(test.TestCase):
         self.settings_dict['INSTALLED_APPS'] = ['django_autoconfig.tests.app_broken_autoconfig']
         with self.assertRaises(ImportError) as exception_manager:
             autoconfig.configure_settings(self.settings_dict)
-        self.assertIn('flibble', exception_manager.exception.message)
+        self.assertIn('flibble', str(exception_manager.exception))
 
 class ConfigureUrlsTestCase(test.TestCase):
     '''Test the autoconfiguration of the urlconf.'''
