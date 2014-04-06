@@ -56,7 +56,10 @@ class ConfigureSettingsTestCase(test.TestCase):
         '''
         An app with no autoconfig shouldn't break things.
         '''
-        self.settings_dict['INSTALLED_APPS'] = ['django_autoconfig.tests.app_no_autoconfig']
+        self.settings_dict['INSTALLED_APPS'] = [
+            'django_autoconfig.tests.app_no_autoconfig',
+            'django',
+        ]
         autoconfig.configure_settings(self.settings_dict)
 
     def test_blank_autoconfig(self):
@@ -86,11 +89,20 @@ class ConfigureSettingsTestCase(test.TestCase):
         '''
         Test putting things somewhere other than at the end of the list.
         '''
-        self.settings_dict['INSTALLED_APPS'] = ['app1', 'app2', 'django_autoconfig.tests.app_relationship']
+        self.settings_dict['INSTALLED_APPS'] = [
+            'django_autoconfig.tests.app1',
+            'django_autoconfig.tests.app2',
+            'django_autoconfig.tests.app_relationship',
+        ]
         autoconfig.configure_settings(self.settings_dict)
         self.assertEqual(
             self.settings_dict['INSTALLED_APPS'],
-            ['django_autoconfig.tests.app_relationship', 'app1', 'app3', 'app2'],
+            [
+                'django_autoconfig.tests.app_relationship',
+                'django_autoconfig.tests.app1',
+                'django_autoconfig.tests.app3',
+                'django_autoconfig.tests.app2',
+            ],
         )
 
     def test_default_setting(self):
@@ -110,6 +122,23 @@ class ConfigureSettingsTestCase(test.TestCase):
         self.settings_dict['DEFAULT_SETTING'] = [4, 5, 6]
         autoconfig.configure_settings(self.settings_dict)
         self.assertEqual(self.settings_dict['DEFAULT_SETTING'], [4, 5, 6])
+
+    def test_importerror_from_no_parent(self):
+        '''
+        An import error due to the parent module not existing should be raised.
+        '''
+        self.settings_dict['INSTALLED_APPS'] = ['i.do.not.exist']
+        with self.assertRaises(ImportError):
+            autoconfig.configure_settings(self.settings_dict)
+
+    def test_importerror_from_import_error(self):
+        '''
+        An import error due to the module itself generating an import error should be raised.
+        '''
+        self.settings_dict['INSTALLED_APPS'] = ['django_autoconfig.tests.app_broken_autoconfig']
+        with self.assertRaises(ImportError) as exception_manager:
+            autoconfig.configure_settings(self.settings_dict)
+        self.assertIn('flibble', exception_manager.exception.message)
 
 class ConfigureUrlsTestCase(test.TestCase):
     '''Test the autoconfiguration of the urlconf.'''
