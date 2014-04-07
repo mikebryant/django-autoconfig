@@ -7,9 +7,9 @@ Automatic configuration of a Django project based on the requirements of apps in
 Basic Usage
 -----------
 
-Import ``django_autoconfig`` in ``settings.py``, and call ``configure_settings`` with ``globals()``::
+Import ``django_autoconfig.autoconfig`` in ``settings.py``, and call ``configure_settings`` with ``globals()``::
 
-    from django_autoconfig import configure_settings
+    from django_autoconfig.autoconfig import configure_settings
     configure_settings(globals())
 
 ``django-autoconfig`` will run through each app in ``INSTALLED_APPS``, applying the configuration in their ``autoconfig`` module.
