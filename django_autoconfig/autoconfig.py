@@ -4,9 +4,9 @@ import collections
 import copy
 from django.core.exceptions import ImproperlyConfigured
 from django.conf import global_settings
+from django.utils.module_loading import module_has_submodule
+import importlib
 import operator
-
-from .utils import optional_import
 
 class OrderingRelationship(object):
     '''
@@ -118,9 +118,10 @@ def configure_settings(settings):
     while changes or old_changes is None:
         changes = 0
         for app_name in settings['INSTALLED_APPS']:
-            module = optional_import("%s.autoconfig" % (app_name,))
-            if not module:
+            app_module = importlib.import_module(app_name)
+            if not module_has_submodule(app_module, 'autoconfig'):
                 continue
+            module = importlib.import_module("%s.autoconfig" % (app_name,))
             changes += merge_dictionaries(
                 settings,
                 getattr(module, 'SETTINGS', {}),
