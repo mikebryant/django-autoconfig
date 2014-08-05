@@ -38,6 +38,7 @@ Autoconfig Rules
 1. If a setting does not exist, it will be defined.
 2. If a setting exists, and is a ``list`` or ``tuple``, the contents will be appended to the existing setting, ignoring any duplicates.
 3. If a setting exists, and is a ``dict``, the contents, the keys will be merged, and values merged according to these same rules.
+4. If an app is in ``AUTOCONFIG_DISABLED_APPS``, that app won't have its autoconfig processed.
 
 Inconsistent States
 -------------------

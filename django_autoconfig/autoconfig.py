@@ -118,6 +118,9 @@ def configure_settings(settings):
     while changes or old_changes is None:
         changes = 0
         for app_name in settings['INSTALLED_APPS']:
+            if app_name in settings.get('AUTOCONFIG_DISABLED_APPS', ()):
+                # This app is disabled, skip it
+                continue
             app_module = importlib.import_module(app_name)
             if not module_has_submodule(app_module, 'autoconfig'):
                 continue
