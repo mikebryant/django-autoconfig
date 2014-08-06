@@ -11,6 +11,8 @@ import operator
 import logging
 LOGGER = logging.getLogger(__name__)
 
+MAX_ITERATIONS = 1000
+
 class OrderingRelationship(object):
     '''
     This class defines a relationship between an element in a setting
@@ -121,12 +123,10 @@ def configure_settings(settings):
     Given a settings object, run automatic configuration of all
     the apps in INSTALLED_APPS.
     '''
-    changes = 0
-    old_changes = None
-    num_apps = 0
-    old_num_apps = len(settings['INSTALLED_APPS'])
+    changes = 1
+    iterations = 0
 
-    while changes or old_changes is None:
+    while changes:
         changes = 0
         for app_name in settings['INSTALLED_APPS']:
             if app_name in settings.get('AUTOCONFIG_DISABLED_APPS', ()):
@@ -151,15 +151,10 @@ def configure_settings(settings):
             )
             for relationship in getattr(module, 'RELATIONSHIPS', []):
                 changes += relationship.apply_changes(settings)
-        num_apps = len(settings['INSTALLED_APPS'])
 
-        if (
-            old_changes is not None and
-            changes >= old_changes and
-            num_apps == old_num_apps
-        ):
+        if iterations >= MAX_ITERATIONS:
             raise ImproperlyConfigured(
                 'Autoconfiguration could not reach a consistent state'
             )
-        old_changes = changes
-        old_num_apps = num_apps
+        iterations += 1
+    LOGGER.debug("Autoconfiguration took %d iterations.", iterations)
