@@ -149,6 +149,14 @@ class ConfigureSettingsTestCase(test.TestCase):
         autoconfig.configure_settings(self.settings_dict)
         self.assertEqual(self.settings_dict['LIST_SETTING'], [1, 2])
 
+    def test_contrib_autoconfig(self):
+        '''
+        Test autoconfig provided by us instead of the app.
+        '''
+        self.settings_dict['INSTALLED_APPS'] = ['django.contrib.auth']
+        autoconfig.configure_settings(self.settings_dict)
+        self.assertIn('django.contrib.sessions', self.settings_dict['INSTALLED_APPS'])
+
 class ConfigureUrlsTestCase(test.TestCase):
     '''Test the autoconfiguration of the urlconf.'''
     urls = 'django_autoconfig.autourlconf'

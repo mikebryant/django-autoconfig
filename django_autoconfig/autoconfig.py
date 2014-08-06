@@ -70,6 +70,8 @@ class OrderingRelationship(object):
                     current_value.index(self.setting_value),
                     current_value.index(item),
                 ):
+                    if isinstance(current_value, tuple):
+                        current_value = list(current_value)
                     location = current_value.index(item)
                     current_value.remove(self.setting_value)
                     current_value.insert(location, self.setting_value)
@@ -131,9 +133,13 @@ def configure_settings(settings):
                 # This app is disabled, skip it
                 continue
             app_module = importlib.import_module(app_name)
-            if not module_has_submodule(app_module, 'autoconfig'):
+            import django_autoconfig.contrib
+            if module_has_submodule(app_module, 'autoconfig'):
+                module = importlib.import_module("%s.autoconfig" % (app_name,))
+            elif app_name in django_autoconfig.contrib.CONTRIB_CONFIGS:
+                module = django_autoconfig.contrib.CONTRIB_CONFIGS[app_name]
+            else:
                 continue
-            module = importlib.import_module("%s.autoconfig" % (app_name,))
             changes += merge_dictionaries(
                 settings,
                 getattr(module, 'SETTINGS', {}),
