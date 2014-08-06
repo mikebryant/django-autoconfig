@@ -8,6 +8,9 @@ from django.utils.module_loading import module_has_submodule
 import importlib
 import operator
 
+import logging
+LOGGER = logging.getLogger(__name__)
+
 class OrderingRelationship(object):
     '''
     This class defines a relationship between an element in a setting
@@ -49,13 +52,14 @@ class OrderingRelationship(object):
             for item in [self.setting_value] + self.before + self.after:
                 if item not in settings[self.setting_name]:
                     settings[self.setting_name] = list(settings[self.setting_name]) + [item]
+                    LOGGER.debug("Added %s to %s.", item, self.setting_name)
                     changes += 1
         elif self.setting_value not in settings[self.setting_name]:
             return changes
 
-        for test, related_items in (
-            (operator.gt, self.before),
-            (operator.lt, self.after),
+        for test, related_items, list_name in (
+            (operator.gt, self.before, 'before'),
+            (operator.lt, self.after, 'after'),
         ):
             current_value = settings[self.setting_name]
 
@@ -70,6 +74,7 @@ class OrderingRelationship(object):
                     current_value.remove(self.setting_value)
                     current_value.insert(location, self.setting_value)
                     settings[self.setting_name] = current_value
+                    LOGGER.debug("Moved %s %s %s.", self.setting_value, list_name, item)
                     changes += 1
 
         return changes
@@ -84,8 +89,10 @@ def merge_dictionaries(current, new, only_defaults=False):
         if key not in current:
             if hasattr(global_settings, key):
                 current[key] = getattr(global_settings, key)
+                LOGGER.debug("Set %s to global default %s.", key, current[key])
             else:
                 current[key] = copy.deepcopy(value)
+                LOGGER.debug("Set %s to %s.", key, current[key])
                 changes += 1
                 continue
         elif only_defaults:
@@ -97,11 +104,13 @@ def merge_dictionaries(current, new, only_defaults=False):
             for element in value:
                 if element not in current_value:
                     current[key] = list(current_value) + [element]
+                    LOGGER.debug("Added %s to %s.", element, key)
                     changes += 1
         else:
             # If we don't know what to do with it, replace it.
             if current_value != value:
                 current[key] = value
+                LOGGER.debug("Set %s to %s.", key, current[key])
                 changes += 1
     return changes
 
