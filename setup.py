@@ -1,5 +1,5 @@
 '''Setup file for django-autoconfig.'''
-from setuptools import setup
+from setuptools import setup, find_packages
 from django_autoconfig.version import __VERSION__
 
 import sys
@@ -14,7 +14,7 @@ if sys.version_info < (2, 7):
 setup(
     name='django-autoconfig',
     version=__VERSION__,
-    packages=['django_autoconfig'],
+    packages=find_packages(),
     description='Automatic configuration of Django projects based on the application requirements.',
     author='Mike Bryant',
     author_email='mike@mikebryant.me.uk',
