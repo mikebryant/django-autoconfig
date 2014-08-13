@@ -13,6 +13,13 @@ LOGGER = logging.getLogger(__name__)
 
 MAX_ITERATIONS = 1000
 
+SETTINGS = {
+    'AUTOCONFIG_DISABLED_APPS': [
+        'django.contrib.admin',
+        'django.contrib.auth',
+    ],
+}
+
 class OrderingRelationship(object):
     '''
     This class defines a relationship between an element in a setting
@@ -128,7 +135,7 @@ def configure_settings(settings):
 
     while changes:
         changes = 0
-        for app_name in settings['INSTALLED_APPS']:
+        for app_name in list(settings['INSTALLED_APPS']) + ['django_autoconfig']:
             if app_name not in settings.get('AUTOCONFIG_DISABLED_APPS', ()):
                 app_module = importlib.import_module(app_name)
             else:
