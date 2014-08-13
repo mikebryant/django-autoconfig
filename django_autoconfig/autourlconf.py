@@ -3,9 +3,11 @@
 from django.conf import settings
 from django.conf.urls import include, patterns, url
 
+from .app_settings import AUTOCONFIG_EXTRA_URLS
+
 urlpatterns = patterns('')
 
-for app_name in settings.INSTALLED_APPS:
+for app_name in list(settings.INSTALLED_APPS) + list(AUTOCONFIG_EXTRA_URLS):
     try:
         urlpatterns += patterns(
             '',

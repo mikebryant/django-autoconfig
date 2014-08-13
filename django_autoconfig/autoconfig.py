@@ -95,7 +95,7 @@ def merge_dictionaries(current, new, only_defaults=False):
                 current[key] = getattr(global_settings, key)
                 LOGGER.debug("Set %s to global default %s.", key, current[key])
             else:
-                current[key] = copy.deepcopy(value)
+                current[key] = copy.copy(value)
                 LOGGER.debug("Set %s to %s.", key, current[key])
                 changes += 1
                 continue
@@ -104,7 +104,7 @@ def merge_dictionaries(current, new, only_defaults=False):
         current_value = current[key]
         if hasattr(current_value, 'items'):
             changes += merge_dictionaries(current_value, value)
-        elif isinstance(current_value, collections.Sequence):
+        elif isinstance(current_value, (list, tuple)):
             for element in value:
                 if element not in current_value:
                     current[key] = list(current_value) + [element]
@@ -129,12 +129,12 @@ def configure_settings(settings):
     while changes:
         changes = 0
         for app_name in settings['INSTALLED_APPS']:
-            if app_name in settings.get('AUTOCONFIG_DISABLED_APPS', ()):
-                # This app is disabled, skip it
-                continue
-            app_module = importlib.import_module(app_name)
+            if app_name not in settings.get('AUTOCONFIG_DISABLED_APPS', ()):
+                app_module = importlib.import_module(app_name)
+            else:
+                app_module = None
             import django_autoconfig.contrib
-            if module_has_submodule(app_module, 'autoconfig'):
+            if app_module and module_has_submodule(app_module, 'autoconfig'):
                 module = importlib.import_module("%s.autoconfig" % (app_name,))
             elif app_name in django_autoconfig.contrib.CONTRIB_CONFIGS:
                 module = django_autoconfig.contrib.CONTRIB_CONFIGS[app_name]

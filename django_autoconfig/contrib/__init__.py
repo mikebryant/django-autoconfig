@@ -77,4 +77,27 @@ CONTRIB_CONFIGS = {
             )
         ],
     ),
+    'django.contrib.admin': Autoconfig(
+        SETTINGS = {
+            'INSTALLED_APPS': [
+                'django.contrib.auth',
+                'django.contrib.contenttypes',
+                'django.contrib.messages',
+            ],
+            'AUTOCONFIG_EXTRA_URLS': [
+                'django_autoconfig.contrib.admin',
+            ],
+        },
+        DEFAULT_SETTINGS = {},
+        RELATIONSHIPS = [
+            OrderingRelationship(
+                'INSTALLED_APPS',
+                'django.contrib.admin',
+                after = [
+                    'django.contrib.contenttypes',
+                ],
+                add_missing = False,
+            )
+        ],
+    ),
 }
