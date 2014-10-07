@@ -4,6 +4,7 @@ import collections
 import copy
 from django.core.exceptions import ImproperlyConfigured
 from django.conf import global_settings
+from django.conf.urls import include, patterns, url
 from django.utils.module_loading import module_has_submodule
 import importlib
 import operator
@@ -165,3 +166,26 @@ def configure_settings(settings):
             )
         iterations += 1
     LOGGER.debug("Autoconfiguration took %d iterations.", iterations)
+
+def configure_urls(apps):
+    '''
+    Configure urls from a list of apps.
+    '''
+    urlpatterns = patterns('')
+
+    for app_name in apps:
+        try:
+            module = importlib.import_module("%s.urls" % app_name)
+            if not hasattr(module, 'urlpatterns'):
+                # Resolver will break if the urls.py file is completely blank.
+                continue
+            urlpatterns += patterns(
+                '',
+                url(
+                    r'^%s/' % app_name.replace("_","-"),
+                    include("%s.urls" % app_name),
+                ),
+            )
+        except ImportError:
+            pass
+    return urlpatterns

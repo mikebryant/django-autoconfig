@@ -6,7 +6,8 @@ from django_autoconfig import autoconfig
 
 import copy
 from django.core.exceptions import ImproperlyConfigured
-from django.core.urlresolvers import resolve
+import django.core.urlresolvers
+from django.core.urlresolvers import resolve, RegexURLResolver
 from django import test
 from django.test.utils import override_settings
 
@@ -161,7 +162,24 @@ class ConfigureUrlsTestCase(test.TestCase):
     '''Test the autoconfiguration of the urlconf.'''
     urls = 'django_autoconfig.autourlconf'
 
-    @override_settings(INSTALLED_APPS=['django_autoconfig.tests.app_urls'])
+    def create_urlconf(self, apps):
+        '''Create a urlconf from a list of apps.'''
+        self.urlpatterns = autoconfig.configure_urls(apps)
+        django.core.urlresolvers._resolver_cache = {}
+
     def test_urls(self):
         '''Test a simple url autoconfiguration.'''
-        resolve('/django-autoconfig.tests.app-urls/index/')
+        self.create_urlconf(['django_autoconfig.tests.app_urls'])
+        resolve('/django-autoconfig.tests.app-urls/index/', urlconf=self)
+
+    def test_blank_urls(self):
+        '''Test a url autoconfiguration with an app with a blank urls.py.'''
+        self.create_urlconf(['django_autoconfig.tests.app_urls', 'django_autoconfig.tests.app_blank_urls'])
+        with self.assertRaises(django.core.urlresolvers.Resolver404):
+            resolve('/django-autoconfig.tests.app-blank-urls/index/', urlconf=self)
+
+    def test_missing_app_urls(self):
+        '''Test a url autoconfiguration with an app without urls.'''
+        self.create_urlconf(['django_autoconfig.tests.app_urls', 'django_autoconfig.tests.app1'])
+        with self.assertRaises(django.core.urlresolvers.Resolver404):
+            resolve('/django-autoconfig.tests.app1/index/', urlconf=self)
