@@ -62,7 +62,7 @@ class OrderingRelationship(object):
             for item in [self.setting_value] + self.before + self.after:
                 if item not in settings[self.setting_name]:
                     settings[self.setting_name] = list(settings[self.setting_name]) + [item]
-                    LOGGER.debug("Added %s to %s.", item, self.setting_name)
+                    LOGGER.debug("Added %r to %r.", item, self.setting_name)
                     changes += 1
         elif self.setting_value not in settings[self.setting_name]:
             return changes
@@ -86,7 +86,7 @@ class OrderingRelationship(object):
                     current_value.remove(self.setting_value)
                     current_value.insert(location, self.setting_value)
                     settings[self.setting_name] = current_value
-                    LOGGER.debug("Moved %s %s %s.", self.setting_value, list_name, item)
+                    LOGGER.debug("Moved %r %r %r.", self.setting_value, list_name, item)
                     changes += 1
 
         return changes
@@ -101,10 +101,10 @@ def merge_dictionaries(current, new, only_defaults=False):
         if key not in current:
             if hasattr(global_settings, key):
                 current[key] = getattr(global_settings, key)
-                LOGGER.debug("Set %s to global default %s.", key, current[key])
+                LOGGER.debug("Set %r to global default %r.", key, current[key])
             else:
                 current[key] = copy.copy(value)
-                LOGGER.debug("Set %s to %s.", key, current[key])
+                LOGGER.debug("Set %r to %r.", key, current[key])
                 changes += 1
                 continue
         elif only_defaults:
@@ -116,13 +116,13 @@ def merge_dictionaries(current, new, only_defaults=False):
             for element in value:
                 if element not in current_value:
                     current[key] = list(current_value) + [element]
-                    LOGGER.debug("Added %s to %s.", element, key)
+                    LOGGER.debug("Added %r to %r.", element, key)
                     changes += 1
         else:
             # If we don't know what to do with it, replace it.
             if current_value != value:
                 current[key] = value
-                LOGGER.debug("Set %s to %s.", key, current[key])
+                LOGGER.debug("Set %r to %r.", key, current[key])
                 changes += 1
     return changes
 

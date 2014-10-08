@@ -7,9 +7,8 @@ from django_autoconfig import autoconfig
 import copy
 from django.core.exceptions import ImproperlyConfigured
 import django.core.urlresolvers
-from django.core.urlresolvers import resolve, RegexURLResolver
+from django.core.urlresolvers import resolve
 from django import test
-from django.test.utils import override_settings
 
 class ConfigureSettingsTestCase(test.TestCase):
     '''Test the configure_settings method.'''
@@ -157,6 +156,32 @@ class ConfigureSettingsTestCase(test.TestCase):
         self.settings_dict['INSTALLED_APPS'] = ['django.contrib.auth']
         autoconfig.configure_settings(self.settings_dict)
         self.assertIn('django.contrib.sessions', self.settings_dict['INSTALLED_APPS'])
+
+    def test_logging_premature_imports(self):
+        '''
+        Test that logging doesn't cause premature imports.
+        '''
+
+        import logging, StringIO
+        output = StringIO.StringIO()
+        stream_handler = logging.StreamHandler(output)
+        logger = logging.getLogger('django_autoconfig.autoconfig')
+        logger.addHandler(stream_handler)
+        logger.setLevel(logging.DEBUG)
+
+        self.triggered = False
+        class Trap(object):
+            def __init__(self, sentinel):
+                self.sentinel = sentinel
+            def __str__(self):
+                self.sentinel.triggered = True
+                return 'triggered!'
+
+        autoconfig.merge_dictionaries({}, {'LOGIN_URL': Trap(self)})
+        self.assertFalse(self.triggered)
+
+        logger.removeHandler(stream_handler)
+
 
 class ConfigureUrlsTestCase(test.TestCase):
     '''Test the autoconfiguration of the urlconf.'''
