@@ -162,8 +162,8 @@ class ConfigureSettingsTestCase(test.TestCase):
         Test that logging doesn't cause premature imports.
         '''
 
-        import logging, StringIO
-        output = StringIO.StringIO()
+        import logging, io
+        output = io.StringIO()
         stream_handler = logging.StreamHandler(output)
         logger = logging.getLogger('django_autoconfig.autoconfig')
         logger.addHandler(stream_handler)
