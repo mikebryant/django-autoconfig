@@ -83,6 +83,7 @@ CONTRIB_CONFIGS = {
                 'django.contrib.auth',
                 'django.contrib.contenttypes',
                 'django.contrib.messages',
+                'django.contrib.staticfiles',
             ],
             'AUTOCONFIG_EXTRA_URLS': [
                 'django_autoconfig.contrib.admin',
