@@ -26,7 +26,7 @@ In your app, define a ``autoconfig`` module, that contains the settings you need
 Ordering Relationships
 ----------------------
 
-If you app requires a particular ordering of the values in a setting, you can define a list of ``django_autoconfig.autoconfig.OrderingRelationship`` objects specifying these relationships.
+If your app requires a particular ordering of the values in a setting, you can define a list of ``django_autoconfig.autoconfig.OrderingRelationship`` objects specifying these relationships.
 
 .. autoclass:: django_autoconfig.autoconfig.OrderingRelationship
     :show-inheritance:
@@ -36,11 +36,11 @@ Autoconfig Rules
 ----------------
 
 1. If a setting does not exist, it will be defined.
-2. If a setting exists, and is a ``list`` or ``tuple``, the contents will be appended to the existing setting, ignoring any duplicates.
-3. If a setting exists, and is a ``dict``, the contents, the keys will be merged, and values merged according to these same rules.
+2. If a setting exists and is a ``list`` or ``tuple``, the contents will be appended to the existing setting, ignoring any duplicates.
+3. If a setting exists and is a ``dict``, the keys will be merged, and values merged, according to these same rules.
 4. If an app is in ``AUTOCONFIG_DISABLED_APPS``, that app won't have its autoconfig processed.
 
 Inconsistent States
 -------------------
 
-If autoconfig cannot reach an inconsistent state, an ``ImproperlyConfigured`` exception will be raised. This means that two or more apps could not agree on the required settings, and this must be manually reserved.
+If autoconfig cannot reach a consistent state, an ``ImproperlyConfigured`` exception will be raised. This means that two or more apps could not agree on the required settings, and this must be manually reserved.
