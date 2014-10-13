@@ -136,7 +136,7 @@ def configure_settings(settings):
 
     while changes:
         changes = 0
-        for app_name in list(settings['INSTALLED_APPS']) + ['django_autoconfig']:
+        for app_name in ['django_autoconfig'] + list(settings['INSTALLED_APPS']):
             if app_name not in settings.get('AUTOCONFIG_DISABLED_APPS', ()):
                 app_module = importlib.import_module(app_name)
             else:
