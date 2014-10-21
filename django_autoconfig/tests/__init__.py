@@ -186,6 +186,15 @@ class ConfigureSettingsTestCase(test.TestCase):
 
         logger.removeHandler(stream_handler)
 
+    def test_premature_evaluation(self):
+        '''
+        Make sure using lazily reversed urls doesn't cause evaluation
+        of the url prior to finishing the settings.
+        '''
+        self.triggered = False
+        autoconfig.merge_dictionaries({'LOGIN_URL': '/login/'}, {'LOGIN_URL': django.core.urlresolvers.reverse_lazy('does.not.exist')})
+        self.assertFalse(self.triggered)
+
 
 class ConfigureUrlsTestCase(test.TestCase):
     '''Test the autoconfiguration of the urlconf.'''

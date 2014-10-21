@@ -21,7 +21,7 @@ setup(
     install_requires=INSTALL_REQUIRES,
     include_package_data=True,
     test_suite           = 'setuptest.setuptest.SetupTestSuite',
-    tests_require        = ['django-setuptest'],
+    tests_require        = ['django-setuptest>=0.1.5'],
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',

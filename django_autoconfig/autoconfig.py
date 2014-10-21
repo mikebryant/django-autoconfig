@@ -120,7 +120,7 @@ def merge_dictionaries(current, new, only_defaults=False):
                     changes += 1
         else:
             # If we don't know what to do with it, replace it.
-            if current_value != value:
+            if current_value is not value:
                 current[key] = value
                 LOGGER.debug("Set %r to %r.", key, current[key])
                 changes += 1
