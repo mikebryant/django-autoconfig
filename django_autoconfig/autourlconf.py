@@ -6,3 +6,7 @@ from .app_settings import AUTOCONFIG_EXTRA_URLS
 from .autoconfig import configure_urls
 
 urlpatterns = configure_urls(list(settings.INSTALLED_APPS) + list(AUTOCONFIG_EXTRA_URLS)) # pylint: disable=C0103
+
+if settings.DEBUG:
+    from django.conf.urls.static import static
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
