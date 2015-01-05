@@ -18,6 +18,8 @@ install:
 script:
   - python setup.py test
 after_success:
+  - ls -al
+  - cat coverage.xml
   - coveralls
 matrix:
   exclude:
