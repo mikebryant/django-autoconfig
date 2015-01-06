@@ -221,3 +221,8 @@ class ConfigureUrlsTestCase(test.TestCase):
         self.create_urlconf(['django_autoconfig.tests.app_urls', 'django_autoconfig.tests.app1'])
         with self.assertRaises(django.core.urlresolvers.Resolver404):
             resolve('/django-autoconfig.tests.app1/index/', urlconf=self)
+
+    def test_broken_urls(self):
+        '''Test a url autoconfiguration with a urlconf that fails due to a missing import.'''
+        with self.assertRaises(ImportError):
+            self.create_urlconf(['django_autoconfig.tests.app_broken_urls'])

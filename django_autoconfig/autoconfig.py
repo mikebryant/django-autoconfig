@@ -174,7 +174,8 @@ def configure_urls(apps):
     urlpatterns = patterns('')
 
     for app_name in apps:
-        try:
+        app_module = importlib.import_module(app_name)
+        if module_has_submodule(app_module, 'urls'):
             module = importlib.import_module("%s.urls" % app_name)
             if not hasattr(module, 'urlpatterns'):
                 # Resolver will break if the urls.py file is completely blank.
@@ -186,6 +187,4 @@ def configure_urls(apps):
                     include("%s.urls" % app_name),
                 ),
             )
-        except ImportError:
-            pass
     return urlpatterns
