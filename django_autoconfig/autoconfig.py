@@ -6,6 +6,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.conf import global_settings
 from django.conf.urls import include, patterns, url
 from django.utils.module_loading import module_has_submodule
+from django.views.generic.base import RedirectView
 import importlib
 import operator
 
@@ -167,11 +168,16 @@ def configure_settings(settings):
         iterations += 1
     LOGGER.debug("Autoconfiguration took %d iterations.", iterations)
 
-def configure_urls(apps):
+def configure_urls(apps, index_view=None):
     '''
     Configure urls from a list of apps.
     '''
     urlpatterns = patterns('')
+
+    if index_view:
+        urlpatterns += patterns('',
+            url(r'^$', RedirectView.as_view(pattern_name=index_view)),
+        )
 
     for app_name in apps:
         app_module = importlib.import_module(app_name)
@@ -187,4 +193,6 @@ def configure_urls(apps):
                     include("%s.urls" % app_name),
                 ),
             )
+
+
     return urlpatterns

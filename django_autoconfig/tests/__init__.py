@@ -200,9 +200,9 @@ class ConfigureUrlsTestCase(test.TestCase):
     '''Test the autoconfiguration of the urlconf.'''
     urls = 'django_autoconfig.autourlconf'
 
-    def create_urlconf(self, apps):
+    def create_urlconf(self, apps, **kwargs):
         '''Create a urlconf from a list of apps.'''
-        self.urlpatterns = autoconfig.configure_urls(apps)
+        self.urlpatterns = autoconfig.configure_urls(apps, **kwargs)
         django.core.urlresolvers._resolver_cache = {}
 
     def test_urls(self):
@@ -226,3 +226,31 @@ class ConfigureUrlsTestCase(test.TestCase):
         '''Test a url autoconfiguration with a urlconf that fails due to a missing import.'''
         with self.assertRaises(ImportError):
             self.create_urlconf(['django_autoconfig.tests.app_broken_urls'])
+
+    def test_no_index_view(self):
+        '''Test the index view functionality, if it's not used.'''
+        self.create_urlconf(['django_autoconfig.tests.app_urls'])
+        with self.assertRaises(django.core.urlresolvers.Resolver404):
+            resolve('/', urlconf=self).func
+
+    def test_broken_index_view(self):
+        '''Test the index view functionality with a broken view.'''
+        self.create_urlconf([], index_view='does-not-exist')
+        view = resolve('/', urlconf=self).func
+        response = view(test.RequestFactory().get(path='/'))
+        self.assertEqual(response.status_code, 410)
+
+class IndexViewTestCase(test.TestCase):
+    '''Test the index view.'''
+    urls = 'django_autoconfig.tests.index_view_urlconf'
+
+    def test_index_view(self):
+        '''Test the index view functionality.'''
+        response = self.client.get('/')
+        #view = resolve('/').func
+        #response = view(test.RequestFactory().get(path='/'))
+        #resolve('/django-autoconfig.tests.app-urls/index/', urlconf=self)
+        self.assertEqual(response.status_code, 301)
+        response = self.client.get('/', follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, 'django_autoconfig/tests/app_urls/index view')
