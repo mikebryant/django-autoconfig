@@ -9,6 +9,7 @@ from django.core.exceptions import ImproperlyConfigured
 import django.core.urlresolvers
 from django.core.urlresolvers import resolve
 from django import test
+from django.utils import unittest
 
 class ConfigureSettingsTestCase(test.TestCase):
     '''Test the configure_settings method.'''
@@ -233,6 +234,7 @@ class ConfigureUrlsTestCase(test.TestCase):
         with self.assertRaises(django.core.urlresolvers.Resolver404):
             resolve('/', urlconf=self).func
 
+    @unittest.skipIf(django.VERSION < (1, 6), 'AUTOCONFIG_INDEX_VIEW needs Django >= 1.6')
     def test_broken_index_view(self):
         '''Test the index view functionality with a broken view.'''
         self.create_urlconf([], index_view='does-not-exist')
@@ -244,6 +246,7 @@ class IndexViewTestCase(test.TestCase):
     '''Test the index view.'''
     urls = 'django_autoconfig.tests.index_view_urlconf'
 
+    @unittest.skipIf(django.VERSION < (1, 6), 'AUTOCONFIG_INDEX_VIEW needs Django >= 1.6')
     def test_index_view(self):
         '''Test the index view functionality.'''
         response = self.client.get('/')
