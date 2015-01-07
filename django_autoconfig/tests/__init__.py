@@ -255,5 +255,4 @@ class IndexViewTestCase(test.TestCase):
         #resolve('/django-autoconfig.tests.app-urls/index/', urlconf=self)
         self.assertEqual(response.status_code, 301)
         response = self.client.get('/', follow=True)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, 'django_autoconfig/tests/app_urls/index view')
+        self.assertContains(response, 'django_autoconfig/tests/app_urls/index view', status_code=200)
