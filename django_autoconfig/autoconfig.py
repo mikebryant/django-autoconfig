@@ -6,7 +6,6 @@ from django.core.exceptions import ImproperlyConfigured
 from django.conf import global_settings
 from django.conf.urls import include, patterns, url
 from django.utils.module_loading import module_has_submodule
-from django.views.generic.base import RedirectView
 import importlib
 import operator
 
@@ -175,6 +174,7 @@ def configure_urls(apps, index_view=None):
     urlpatterns = patterns('')
 
     if index_view:
+        from django.views.generic.base import RedirectView
         urlpatterns += patterns('',
             url(r'^$', RedirectView.as_view(pattern_name=index_view)),
         )
