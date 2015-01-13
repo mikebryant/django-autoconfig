@@ -34,8 +34,9 @@ deploy:
   user: LeaChim
   password:
     secure: IuIoDvmYRKjnQQ9wYSPSfKDgG/+8/nDqTj3KUacHt8XCKbjVcbKxsPKz76Zr214iVTqDQUt35w7wIENJSYP0LaHQ42TekwF+TtDcifSzgvQpxyJ0sP9IjqNHaJ6oHa/XXJJWWQjypFLOOUDSMW8t6+dKcrQp/vHctHvVbP1gECA=
+  distributions: "sdist bdist_wheel"
   on:
     all_branches: true
-    distributions: "sdist bdist_wheel"
     repo: mikebryant/django-autoconfig
     tags: true
+    condition: "$DJANGO = 1.7"
