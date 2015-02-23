@@ -38,5 +38,5 @@ deploy:
   on:
     all_branches: true
     repo: mikebryant/django-autoconfig
-    tags: true
     condition: "$DJANGO = 1.7"
+  edge: true
