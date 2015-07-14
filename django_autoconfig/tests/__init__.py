@@ -202,7 +202,10 @@ class ConfigureSettingsTestCase(test.TestCase):
         '''
         import django_autoconfig.environment_settings.autoconfig
         results = django_autoconfig.environment_settings.autoconfig.get_settings_from_environment(
-            {'DJANGO_BLAH': '"test-value"'},
+            {
+                'DJANGO_BLAH': '"test-value"',
+                'DJANGO_DONTWORK': 'flibble',
+            },
         )
         self.assertEqual(results, {'BLAH': 'test-value'})
 

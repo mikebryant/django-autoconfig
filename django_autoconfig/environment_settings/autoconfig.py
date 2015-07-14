@@ -1,7 +1,10 @@
 '''Pull settings from environment variables.'''
 
 import ast
+import logging
 import os
+
+LOGGER = logging.getLogger(__name__)
 
 
 def get_settings_from_environment(environ):
@@ -11,7 +14,10 @@ def get_settings_from_environment(environ):
         if not name.startswith('DJANGO_'):
             continue
         name = name.replace('DJANGO_', '', 1)
-        settings[name] = ast.literal_eval(value)
+        try:
+            settings[name] = ast.literal_eval(value)
+        except ValueError as err:
+            LOGGER.warn("Unable to parse setting %s=%s (%s)", name, value, err)
     return settings
 
 SETTINGS = get_settings_from_environment(os.environ)
