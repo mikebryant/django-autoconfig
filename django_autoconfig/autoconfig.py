@@ -126,7 +126,7 @@ def merge_dictionaries(current, new, only_defaults=False):
                 changes += 1
     return changes
 
-def configure_settings(settings):
+def configure_settings(settings, environment_settings=True):
     '''
     Given a settings object, run automatic configuration of all
     the apps in INSTALLED_APPS.
@@ -136,7 +136,10 @@ def configure_settings(settings):
 
     while changes:
         changes = 0
-        for app_name in ['django_autoconfig'] + list(settings['INSTALLED_APPS']):
+        app_names = ['django_autoconfig'] + list(settings['INSTALLED_APPS'])
+        if environment_settings:
+            app_names.append('django_autoconfig.environment_settings')
+        for app_name in app_names:
             if app_name not in settings.get('AUTOCONFIG_DISABLED_APPS', ()):
                 app_module = importlib.import_module(app_name)
             else:

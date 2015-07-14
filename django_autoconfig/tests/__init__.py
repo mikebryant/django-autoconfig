@@ -196,6 +196,16 @@ class ConfigureSettingsTestCase(test.TestCase):
         autoconfig.merge_dictionaries({'LOGIN_URL': '/login/'}, {'LOGIN_URL': django.core.urlresolvers.reverse_lazy('does.not.exist')})
         self.assertFalse(self.triggered)
 
+    def test_environment_settings(self):
+        '''
+        Check that settings get pulled from the environment.
+        '''
+        import django_autoconfig.environment_settings.autoconfig
+        results = django_autoconfig.environment_settings.autoconfig.get_settings_from_environment(
+            {'DJANGO_BLAH': '"test-value"'},
+        )
+        self.assertEqual(results, {'BLAH': 'test-value'})
+
 
 class ConfigureUrlsTestCase(test.TestCase):
     '''Test the autoconfiguration of the urlconf.'''
