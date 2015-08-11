@@ -16,7 +16,7 @@ def get_settings_from_environment(environ):
         name = name.replace('DJANGO_', '', 1)
         try:
             settings[name] = ast.literal_eval(value)
-        except ValueError as err:
+        except (SyntaxError, ValueError) as err:
             LOGGER.warn("Unable to parse setting %s=%s (%s)", name, value, err)
     return settings
 
