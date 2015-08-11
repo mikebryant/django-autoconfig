@@ -205,6 +205,7 @@ class ConfigureSettingsTestCase(test.TestCase):
             {
                 'DJANGO_BLAH': '"test-value"',
                 'DJANGO_DONTWORK': 'flibble',
+                'DJANGO_SYNTAXERROR': '=',
             },
         )
         self.assertEqual(results, {'BLAH': 'test-value'})
