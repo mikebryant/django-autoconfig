@@ -88,6 +88,9 @@ CONTRIB_CONFIGS = {
             'AUTOCONFIG_EXTRA_URLS': [
                 'django_autoconfig.contrib.admin',
             ],
+            'TEMPLATE_CONTEXT_PROCESSORS': [
+                'django.contrib.auth.context_processors.auth',
+            ],
         },
         DEFAULT_SETTINGS = {},
         RELATIONSHIPS = [
