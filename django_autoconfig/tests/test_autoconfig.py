@@ -210,6 +210,31 @@ class ConfigureSettingsTestCase(test.TestCase):
         )
         self.assertEqual(results, {'BLAH': 'test-value'})
 
+    def test_django18_templates(self):
+        '''
+        Check that the Django 1.8 TEMPLATES setting works.
+        '''
+        self.settings_dict['INSTALLED_APPS'] = [
+            'django_autoconfig.tests.app_18templates1',
+            'django_autoconfig.tests.app_18templates2',
+        ]
+        autoconfig.configure_settings(self.settings_dict)
+        self.assertEqual(
+            self.settings_dict['TEMPLATES'],
+            [
+                {
+                    'BACKEND': 'django.template.backends.django.DjangoTemplates',
+                    'APP_DIRS': True,
+                    'OPTIONS': {
+                        'context_processors': [
+                            'django.template.context_processors.request',
+                            'context.processor.2',
+                        ],
+                    },
+                },
+            ],
+        )
+
 
 class ConfigureUrlsTestCase(test.TestCase):
     '''Test the autoconfiguration of the urlconf.'''

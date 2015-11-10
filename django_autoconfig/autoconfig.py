@@ -91,7 +91,7 @@ class OrderingRelationship(object):
 
         return changes
 
-def merge_dictionaries(current, new, only_defaults=False):
+def merge_dictionaries(current, new, only_defaults=False, template_special_case=False):
     '''
     Merge two settings dictionaries, recording how many changes were needed.
 
@@ -115,9 +115,20 @@ def merge_dictionaries(current, new, only_defaults=False):
         elif isinstance(current_value, (list, tuple)):
             for element in value:
                 if element not in current_value:
-                    current[key] = list(current_value) + [element]
-                    LOGGER.debug("Added %r to %r.", element, key)
-                    changes += 1
+                    if template_special_case and key == 'TEMPLATES':
+                        existing_matches = [
+                            template for template in current_value if template['BACKEND'] == element['BACKEND']
+                        ]
+                        if existing_matches:
+                            changes += merge_dictionaries(existing_matches[0], element)
+                        else:
+                            current[key] = list(current_value) + [element]
+                            LOGGER.debug("Added %r to %r.", element, key)
+                            changes += 1
+                    else:
+                        current[key] = list(current_value) + [element]
+                        LOGGER.debug("Added %r to %r.", element, key)
+                        changes += 1
         else:
             # If we don't know what to do with it, replace it.
             if current_value is not value:
@@ -154,6 +165,7 @@ def configure_settings(settings, environment_settings=True):
             changes += merge_dictionaries(
                 settings,
                 getattr(module, 'SETTINGS', {}),
+                template_special_case=True,
             )
             changes += merge_dictionaries(
                 settings,
