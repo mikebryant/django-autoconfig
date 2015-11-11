@@ -5,6 +5,7 @@ import copy
 from django.core.exceptions import ImproperlyConfigured
 from django.conf import global_settings
 from django.conf.urls import include, patterns, url
+from django.utils.functional import Promise
 from django.utils.module_loading import module_has_submodule
 import importlib
 import operator
@@ -129,9 +130,15 @@ def merge_dictionaries(current, new, only_defaults=False, template_special_case=
                         current[key] = list(current_value) + [element]
                         LOGGER.debug("Added %r to %r.", element, key)
                         changes += 1
-        else:
+        elif isinstance(current_value, Promise) or isinstance(value, Promise):
             # If we don't know what to do with it, replace it.
             if current_value is not value:
+                current[key] = value
+                LOGGER.debug("Set %r to %r.", key, current[key])
+                changes += 1
+        else:
+            # If we don't know what to do with it, replace it.
+            if current_value != value:
                 current[key] = value
                 LOGGER.debug("Set %r to %r.", key, current[key])
                 changes += 1
