@@ -7,6 +7,7 @@ from django.conf import global_settings
 from django.conf.urls import include, patterns, url
 from django.utils.functional import Promise
 from django.utils.module_loading import module_has_submodule
+import imp
 import importlib
 import operator
 
@@ -14,13 +15,6 @@ import logging
 LOGGER = logging.getLogger(__name__)
 
 MAX_ITERATIONS = 1000
-
-SETTINGS = {
-    'AUTOCONFIG_DISABLED_APPS': [
-        'django.contrib.admin',
-        'django.contrib.auth',
-    ],
-}
 
 class OrderingRelationship(object):
     '''
@@ -144,6 +138,18 @@ def merge_dictionaries(current, new, only_defaults=False, template_special_case=
                 changes += 1
     return changes
 
+def autoconfig_module_exists(app_name):
+    names = app_name.split('.')
+    path = None
+    for name in names:
+        _, path, _ = imp.find_module(name, path)
+        path = [path]
+    try:
+        imp.find_module('autoconfig', path)
+        return True
+    except ImportError:
+        return False
+
 def configure_settings(settings, environment_settings=True):
     '''
     Given a settings object, run automatic configuration of all
@@ -158,12 +164,8 @@ def configure_settings(settings, environment_settings=True):
         if environment_settings:
             app_names.append('django_autoconfig.environment_settings')
         for app_name in app_names:
-            if app_name not in settings.get('AUTOCONFIG_DISABLED_APPS', ()):
-                app_module = importlib.import_module(app_name)
-            else:
-                app_module = None
             import django_autoconfig.contrib
-            if app_module and module_has_submodule(app_module, 'autoconfig'):
+            if autoconfig_module_exists(app_name):
                 module = importlib.import_module("%s.autoconfig" % (app_name,))
             elif app_name in django_autoconfig.contrib.CONTRIB_CONFIGS:
                 module = django_autoconfig.contrib.CONTRIB_CONFIGS[app_name]
