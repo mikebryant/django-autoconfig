@@ -9,7 +9,11 @@ from django.core.exceptions import ImproperlyConfigured
 import django.core.urlresolvers
 from django.core.urlresolvers import resolve
 from django import test
-from django.utils import unittest
+
+if django.VERSION < (1, 7):
+    from django.utils import unittest
+else:
+    import unittest
 
 class ConfigureSettingsTestCase(test.TestCase):
     '''Test the configure_settings method.'''
@@ -292,6 +296,6 @@ class IndexViewTestCase(test.TestCase):
         #view = resolve('/').func
         #response = view(test.RequestFactory().get(path='/'))
         #resolve('/django-autoconfig.tests.app-urls/index/', urlconf=self)
-        self.assertEqual(response.status_code, 301)
+        self.assertIn(response.status_code, (301, 302))
         response = self.client.get('/', follow=True)
         self.assertContains(response, 'django_autoconfig/tests/app_urls/index view', status_code=200)
