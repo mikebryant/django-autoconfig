@@ -145,15 +145,6 @@ class ConfigureSettingsTestCase(test.TestCase):
             autoconfig.configure_settings(self.settings_dict)
         self.assertIn('flibble', str(exception_manager.exception))
 
-    def test_disabled_autoconfig(self):
-        '''
-        Test the ability to disable autoconfig for some apps.
-        '''
-        self.settings_dict['INSTALLED_APPS'] = ['django_autoconfig.tests.app_list']
-        self.settings_dict['AUTOCONFIG_DISABLED_APPS'] = ['django_autoconfig.tests.app_list']
-        autoconfig.configure_settings(self.settings_dict)
-        self.assertEqual(self.settings_dict['LIST_SETTING'], [1, 2])
-
     def test_contrib_autoconfig(self):
         '''
         Test autoconfig provided by us instead of the app.
