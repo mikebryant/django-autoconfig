@@ -276,6 +276,29 @@ class ConfigureUrlsTestCase(test.TestCase):
         response = view(test.RequestFactory().get(path='/'))
         self.assertEqual(response.status_code, 410)
 
+    def test_url_prefix_blank(self):
+        '''Test the url prefix mapping works for blank prefixes.'''
+        self.create_urlconf(
+            ['django_autoconfig.tests.app_urls'],
+            prefixes={
+                'django_autoconfig.tests.app_urls': '',
+            },
+        )
+        resolve('/index/', urlconf=self)
+        with self.assertRaises(django.core.urlresolvers.Resolver404):
+            resolve('/django-autoconfig.tests.app-urls/index/', urlconf=self)
+
+    def test_url_prefixes(self):
+        '''Test the url prefix mapping works for prefixes.'''
+        self.create_urlconf(
+            ['django_autoconfig.tests.app_urls'],
+            prefixes={
+                'django_autoconfig.tests.app_urls': 'flibble',
+            },
+        )
+        resolve('/flibble/index/', urlconf=self)
+
+
 class IndexViewTestCase(test.TestCase):
     '''Test the index view.'''
     urls = 'django_autoconfig.tests.index_view_urlconf'
