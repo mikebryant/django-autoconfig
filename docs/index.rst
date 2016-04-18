@@ -43,4 +43,4 @@ Autoconfig Rules
 Inconsistent States
 -------------------
 
-If autoconfig cannot reach a consistent state, an ``ImproperlyConfigured`` exception will be raised. This means that two or more apps could not agree on the required settings, and this must be manually reserved.
+If autoconfig cannot reach a consistent state, an ``ImproperlyConfigured`` exception will be raised. This means that two or more apps could not agree on the required settings, and this must be manually resolved.
