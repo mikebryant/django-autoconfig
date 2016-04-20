@@ -202,7 +202,7 @@ def configure_urls(apps, index_view=None, prefixes=None):
     if index_view:
         from django.views.generic.base import RedirectView
         urlpatterns += patterns('',
-            url(r'^$', RedirectView.as_view(pattern_name=index_view)),
+            url(r'^$', RedirectView.as_view(pattern_name=index_view, permanent=False)),
         )
 
     for app_name in apps:
