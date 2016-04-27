@@ -6,6 +6,8 @@ import os
 
 LOGGER = logging.getLogger(__name__)
 
+def _ignore_setting(name):
+    return name == 'SETTINGS_MODULE'
 
 def get_settings_from_environment(environ):
     '''Deduce settings from environment variables'''
@@ -14,6 +16,8 @@ def get_settings_from_environment(environ):
         if not name.startswith('DJANGO_'):
             continue
         name = name.replace('DJANGO_', '', 1)
+        if _ignore_setting(name):
+            continue
         try:
             settings[name] = ast.literal_eval(value)
         except (SyntaxError, ValueError) as err:
