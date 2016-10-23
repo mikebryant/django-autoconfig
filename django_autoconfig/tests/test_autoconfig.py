@@ -303,7 +303,8 @@ class IndexViewTestCase(test.TestCase):
     '''Test the index view.'''
     urls = 'django_autoconfig.tests.index_view_urlconf'
 
-    @unittest.skipIf(django.VERSION < (1, 6), 'AUTOCONFIG_INDEX_VIEW needs Django >= 1.6')
+    @unittest.skipIf(django.VERSION < (1, 6) or django.VERSION > (1, 9),
+                     'AUTOCONFIG_INDEX_VIEW needs Django >= 1.6, < 1.10')
     def test_index_view(self):
         '''Test the index view functionality.'''
         response = self.client.get('/')
