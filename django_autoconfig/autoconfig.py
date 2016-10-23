@@ -4,7 +4,12 @@ import collections
 import copy
 from django.core.exceptions import ImproperlyConfigured
 from django.conf import global_settings
-from django.conf.urls import include, patterns, url
+from django.conf.urls import include, url
+try:
+    from django.conf.urls import patterns
+except ImportError:
+    def patterns(_, *args):
+        return args
 from django.utils.functional import Promise
 from django.utils.module_loading import module_has_submodule
 import imp
