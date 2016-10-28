@@ -231,9 +231,9 @@ class ConfigureSettingsTestCase(test.TestCase):
         )
 
 
+@test.utils.override_settings(ROOT_URLCONF='django_autoconfig.autourlconf')
 class ConfigureUrlsTestCase(test.TestCase):
     '''Test the autoconfiguration of the urlconf.'''
-    urls = 'django_autoconfig.autourlconf'
 
     def create_urlconf(self, apps, **kwargs):
         '''Create a urlconf from a list of apps.'''
@@ -299,9 +299,9 @@ class ConfigureUrlsTestCase(test.TestCase):
         resolve('/flibble/index/', urlconf=self)
 
 
+@test.utils.override_settings(ROOT_URLCONF='django_autoconfig.tests.index_view_urlconf')
 class IndexViewTestCase(test.TestCase):
     '''Test the index view.'''
-    urls = 'django_autoconfig.tests.index_view_urlconf'
 
     @unittest.skipIf(django.VERSION < (1, 6), 'AUTOCONFIG_INDEX_VIEW needs Django >= 1.6')
     def test_index_view(self):
