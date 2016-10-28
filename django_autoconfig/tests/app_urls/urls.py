@@ -8,5 +8,5 @@ except ImportError:
 from django_autoconfig.tests.app_urls.views import index
 
 urlpatterns = patterns('',
-    url(r'^index/$', index),
+    url(r'^index/$', index, name='test-app-index'),
 )
