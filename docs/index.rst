@@ -40,6 +40,18 @@ Autoconfig Rules
 3. If a setting exists and is a ``dict``, the keys will be merged, and values merged, according to these same rules.
 4. If an app is in ``AUTOCONFIG_DISABLED_APPS``, that app won't have its autoconfig processed.
 
+Autoconfig urlconf
+---------------------
+
+To aid in URL configuration, an automatic urlconf is provided.
+This can be used as follows::
+
+    ROOT_URLCONF = 'django_autoconfig.autourlconf'
+
+This will result in each application being included under it's import path, e.g. ``INSTALLED_APPs = ['app']`` will result in ``/app/`` being mapped to ``app.urls``
+
+In addition you may define ``AUTOCONFIG_INDEX_VIEW`` in your settings file, this may be anything that can be passed to ``reverse()``. This will create a redirect at the top of the url conf (``/``)
+
 Inconsistent States
 -------------------
 
