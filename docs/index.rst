@@ -48,9 +48,11 @@ This can be used as follows::
 
     ROOT_URLCONF = 'django_autoconfig.autourlconf'
 
-This will result in each application being included under it's import path, e.g. ``INSTALLED_APPs = ['app']`` will result in ``/app/`` being mapped to ``app.urls``
+This will result in each application being included under it's import path, e.g. ``INSTALLED_APPS = ['app']`` will result in ``/app/`` being mapped to ``app.urls``
 
 In addition you may define ``AUTOCONFIG_INDEX_VIEW`` in your settings file, this may be anything that can be passed to ``reverse()``. This will create a redirect at the top of the url conf (``/``)
+
+If you don't want a particular app to be included in the automatic urlconf, you can include the setting ``AUTOCONFIG_URLCONF_EXCLUDE_APPS``, which should be a list of app names that should not be included. These apps will be skipped when the automatic urlconf is generated.
 
 Inconsistent States
 -------------------
