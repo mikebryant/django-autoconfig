@@ -2,11 +2,14 @@
 
 from django.conf import settings
 
-from .app_settings import AUTOCONFIG_EXTRA_URLS, AUTOCONFIG_INDEX_VIEW, AUTOCONFIG_URL_PREFIXES
+from .app_settings import AUTOCONFIG_EXTRA_URLS, AUTOCONFIG_INDEX_VIEW, AUTOCONFIG_URL_PREFIXES, AUTOCONFIG_URLCONF_EXCLUDE_APPS
+
 from .autoconfig import configure_urls
 
+apps = [app for app in settings.INSTALLED_APPS if app not in AUTOCONFIG_URLCONF_EXCLUDE_APPS]
+
 urlpatterns = configure_urls(  # pylint: disable=C0103
-    list(settings.INSTALLED_APPS) + list(AUTOCONFIG_EXTRA_URLS),
+    apps + list(AUTOCONFIG_EXTRA_URLS),
     index_view=AUTOCONFIG_INDEX_VIEW,
     prefixes=AUTOCONFIG_URL_PREFIXES,
 )
