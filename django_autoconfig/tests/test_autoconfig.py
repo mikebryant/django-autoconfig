@@ -298,6 +298,23 @@ class ConfigureUrlsTestCase(test.TestCase):
         )
         resolve('/flibble/index/', urlconf=self)
 
+    def test_contrib_admin(self):
+        '''
+        Test that our django.contrib.admin dependencies work.
+        '''
+        settings_dict = {
+            'INSTALLED_APPS': [
+                'django_autoconfig.tests.app_contrib_admin',
+            ],
+        }
+
+        autoconfig.configure_settings(settings_dict)
+        with test.utils.override_settings(**settings_dict):
+            self.create_urlconf(
+                list(settings_dict['INSTALLED_APPS']) + list(settings_dict['AUTOCONFIG_EXTRA_URLS']),
+            )
+            resolve('/django-autoconfig.contrib.admin/', urlconf=self)
+
 
 @test.utils.override_settings(ROOT_URLCONF='django_autoconfig.tests.index_view_urlconf')
 class IndexViewTestCase(test.TestCase):

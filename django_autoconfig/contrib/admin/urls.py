@@ -1,4 +1,4 @@
-from django.conf.urls import include
+from django.conf.urls import include, url
 try:
     from django.conf.urls import patterns
 except ImportError:
@@ -8,5 +8,5 @@ from django.contrib import admin
 
 admin.autodiscover()
 urlpatterns = patterns('',
-    ('', include(admin.site.urls)),
+    url('', include(admin.site.urls)),
 )
