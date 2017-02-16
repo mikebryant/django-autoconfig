@@ -16,8 +16,12 @@ import imp
 import importlib
 import operator
 
+import django_autoconfig.compat as compat
+
 import logging
 LOGGER = logging.getLogger(__name__)
+# Set default logging handler to avoid "No handler found" warnings.
+LOGGER.addHandler(compat.NullHandler())
 
 MAX_ITERATIONS = 1000
 

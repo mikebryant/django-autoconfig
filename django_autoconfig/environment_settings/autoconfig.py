@@ -4,7 +4,11 @@ import ast
 import logging
 import os
 
+import django_autoconfig.compat
+
 LOGGER = logging.getLogger(__name__)
+# Set default logging handler to avoid "No handler found" warnings.
+LOGGER.addHandler(django_autoconfig.compat.NullHandler())
 
 def _ignore_setting(name):
     return name == 'SETTINGS_MODULE'
