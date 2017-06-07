@@ -6,7 +6,7 @@ python:
 - 3.4
 - 3.5
 - pypy
-- pypy3
+- pypy3.3-5.5-alpha
 env:
 - DJANGO=1.4.15
 - DJANGO=1.6.7
@@ -47,11 +47,11 @@ matrix:
     env: DJANGO=1.6.7
   - python: 3.5
     env: DJANGO=1.7
-  - python: pypy3
+  - python: pypy3.3-5.5-alpha
     env: DJANGO=1.4.15
-  - python: pypy3
+  - python: pypy3.3-5.5-alpha
     env: DJANGO=1.9
-  - python: pypy3
+  - python: pypy3.3-5.5-alpha
     env: DJANGO=1.10
 deploy:
   provider: pypi
