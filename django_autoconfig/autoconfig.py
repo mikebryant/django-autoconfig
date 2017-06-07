@@ -9,7 +9,7 @@ try:
     from django.conf.urls import patterns
 except ImportError:
     def patterns(_, *args):
-        return args
+        return list(args)
 from django.utils.functional import Promise
 from django.utils.module_loading import module_has_submodule
 import imp
