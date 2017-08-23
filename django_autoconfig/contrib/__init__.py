@@ -13,14 +13,14 @@ CONTRIB_CONFIGS = {
                 'django.contrib.contenttypes',
                 'django.contrib.sessions',
             ],
-            'MIDDLEWARE_CLASSES': [
+            'MIDDLEWARE': [
                 'django.contrib.auth.middleware.AuthenticationMiddleware',
             ],
         },
         DEFAULT_SETTINGS = {},
         RELATIONSHIPS = [
             OrderingRelationship(
-                'MIDDLEWARE_CLASSES',
+                'MIDDLEWARE',
                 'django.contrib.auth.middleware.AuthenticationMiddleware',
                 after = [
                     'django.middleware.common.CommonMiddleware',
@@ -36,7 +36,7 @@ CONTRIB_CONFIGS = {
             'INSTALLED_APPS': [
                 'django.contrib.sessions',
             ],
-            'MIDDLEWARE_CLASSES': [
+            'MIDDLEWARE': [
                 'django.contrib.messages.middleware.MessageMiddleware',
             ],
             'TEMPLATE_CONTEXT_PROCESSORS': [
@@ -56,7 +56,7 @@ CONTRIB_CONFIGS = {
         DEFAULT_SETTINGS = {},
         RELATIONSHIPS = [
             OrderingRelationship(
-                'MIDDLEWARE_CLASSES',
+                'MIDDLEWARE',
                 'django.contrib.messages.middleware.MessageMiddleware',
                 after = [
                     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -68,14 +68,14 @@ CONTRIB_CONFIGS = {
     ),
     'django.contrib.sessions': Autoconfig(
         SETTINGS = {
-            'MIDDLEWARE_CLASSES': [
+            'MIDDLEWARE': [
                 'django.contrib.sessions.middleware.SessionMiddleware',
             ],
         },
         DEFAULT_SETTINGS = {},
         RELATIONSHIPS = [
             OrderingRelationship(
-                'MIDDLEWARE_CLASSES',
+                'MIDDLEWARE',
                 'django.contrib.sessions.middleware.SessionMiddleware',
                 after = [
                     'django.middleware.cache.UpdateCacheMiddleware',
