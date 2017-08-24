@@ -1,7 +1,6 @@
 '''Autoconfig data for applications that don't support this protocol.'''
 
 from collections import namedtuple
-from distutils.version import StrictVersion
 import django
 from django_autoconfig.autoconfig import OrderingRelationship
 
