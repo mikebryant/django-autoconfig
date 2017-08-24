@@ -1,10 +1,14 @@
 '''Autoconfig data for applications that don't support this protocol.'''
 
 from collections import namedtuple
-
+import django
 from django_autoconfig.autoconfig import OrderingRelationship
 
 Autoconfig = namedtuple('Autoconfig', ('SETTINGS', 'DEFAULT_SETTINGS', 'RELATIONSHIPS'))
+if django.VERSION < (1, 10):
+    middleware_key = 'MIDDLEWARE_CLASSES'
+else:
+    middleware_key = 'MIDDLEWARE'
 
 CONTRIB_CONFIGS = {
     'django.contrib.auth': Autoconfig(
@@ -13,14 +17,14 @@ CONTRIB_CONFIGS = {
                 'django.contrib.contenttypes',
                 'django.contrib.sessions',
             ],
-            'MIDDLEWARE_CLASSES': [
+            middleware_key: [
                 'django.contrib.auth.middleware.AuthenticationMiddleware',
             ],
         },
         DEFAULT_SETTINGS = {},
         RELATIONSHIPS = [
             OrderingRelationship(
-                'MIDDLEWARE_CLASSES',
+                middleware_key,
                 'django.contrib.auth.middleware.AuthenticationMiddleware',
                 after = [
                     'django.middleware.common.CommonMiddleware',
@@ -36,7 +40,7 @@ CONTRIB_CONFIGS = {
             'INSTALLED_APPS': [
                 'django.contrib.sessions',
             ],
-            'MIDDLEWARE_CLASSES': [
+            middleware_key: [
                 'django.contrib.messages.middleware.MessageMiddleware',
             ],
             'TEMPLATE_CONTEXT_PROCESSORS': [
@@ -56,7 +60,7 @@ CONTRIB_CONFIGS = {
         DEFAULT_SETTINGS = {},
         RELATIONSHIPS = [
             OrderingRelationship(
-                'MIDDLEWARE_CLASSES',
+                middleware_key,
                 'django.contrib.messages.middleware.MessageMiddleware',
                 after = [
                     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -68,14 +72,14 @@ CONTRIB_CONFIGS = {
     ),
     'django.contrib.sessions': Autoconfig(
         SETTINGS = {
-            'MIDDLEWARE_CLASSES': [
+            middleware_key: [
                 'django.contrib.sessions.middleware.SessionMiddleware',
             ],
         },
         DEFAULT_SETTINGS = {},
         RELATIONSHIPS = [
             OrderingRelationship(
-                'MIDDLEWARE_CLASSES',
+                middleware_key,
                 'django.contrib.sessions.middleware.SessionMiddleware',
                 after = [
                     'django.middleware.cache.UpdateCacheMiddleware',
