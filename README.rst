@@ -12,16 +12,16 @@ django-autoconfig
 .. image:: https://landscape.io/github/mikebryant/django-autoconfig/master/landscape.png
    :target: https://landscape.io/github/mikebryant/django-autoconfig/master
    :alt: Code Health Badge
-.. image:: https://pypip.in/v/django-autoconfig/badge.png
+.. image:: https://img.shields.io/pypi/v/django-autoconfig.svg
     :target: https://pypi.python.org/pypi/django-autoconfig/
     :alt: Version Badge
-.. image:: https://pypip.in/d/django-autoconfig/badge.png
+.. image:: https://img.shields.io/pypi/dm/django-autoconfig.svg
     :target: https://pypi.python.org/pypi/django-autoconfig/
     :alt: Downloads Badge
-.. image:: https://pypip.in/wheel/django-autoconfig/badge.png
+.. image:: https://img.shields.io/pypi/wheel/django-autoconfig.svg
     :target: https://pypi.python.org/pypi/django-autoconfig/
     :alt: Wheel Status Badge
-.. image:: https://pypip.in/license/django-autoconfig/badge.png
+.. image:: https://img.shields.io/pypi/l/django-autoconfig.svg
     :target: https://pypi.python.org/pypi/django-autoconfig/
     :alt: License Badge
 
