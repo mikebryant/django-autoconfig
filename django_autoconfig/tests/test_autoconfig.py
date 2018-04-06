@@ -6,8 +6,14 @@ from django_autoconfig import autoconfig
 
 import copy
 from django.core.exceptions import ImproperlyConfigured
-import django.core.urlresolvers
-from django.core.urlresolvers import resolve
+import django
+try:
+    from django.core import urlresolvers
+    from django.core.urlresolvers import resolve
+except ImportError:
+    from django import urls as urlresolvers
+    from django.urls import resolve
+
 from django import test
 
 if django.VERSION < (1, 7):
@@ -188,7 +194,7 @@ class ConfigureSettingsTestCase(test.TestCase):
         of the url prior to finishing the settings.
         '''
         self.triggered = False
-        autoconfig.merge_dictionaries({'LOGIN_URL': '/login/'}, {'LOGIN_URL': django.core.urlresolvers.reverse_lazy('does.not.exist')})
+        autoconfig.merge_dictionaries({'LOGIN_URL': '/login/'}, {'LOGIN_URL': urlresolvers.reverse_lazy('does.not.exist')})
         self.assertFalse(self.triggered)
 
     def test_environment_settings(self):
@@ -238,7 +244,9 @@ class ConfigureUrlsTestCase(test.TestCase):
     def create_urlconf(self, apps, **kwargs):
         '''Create a urlconf from a list of apps.'''
         self.urlpatterns = autoconfig.configure_urls(apps, **kwargs)
-        django.core.urlresolvers._resolver_cache = {}
+        # The following line previously set urlresolvers._resolver_cache to {}, but _resolver_cache is not available
+        # since Django 1.7. Using urlresolvers.clear_url_caches() is better way of clearing the cache.
+        urlresolvers.clear_url_caches()
 
     def test_urls(self):
         '''Test a simple url autoconfiguration.'''
@@ -248,13 +256,13 @@ class ConfigureUrlsTestCase(test.TestCase):
     def test_blank_urls(self):
         '''Test a url autoconfiguration with an app with a blank urls.py.'''
         self.create_urlconf(['django_autoconfig.tests.app_urls', 'django_autoconfig.tests.app_blank_urls'])
-        with self.assertRaises(django.core.urlresolvers.Resolver404):
+        with self.assertRaises(urlresolvers.Resolver404):
             resolve('/django-autoconfig.tests.app-blank-urls/index/', urlconf=self)
 
     def test_missing_app_urls(self):
         '''Test a url autoconfiguration with an app without urls.'''
         self.create_urlconf(['django_autoconfig.tests.app_urls', 'django_autoconfig.tests.app1'])
-        with self.assertRaises(django.core.urlresolvers.Resolver404):
+        with self.assertRaises(urlresolvers.Resolver404):
             resolve('/django-autoconfig.tests.app1/index/', urlconf=self)
 
     def test_broken_urls(self):
@@ -265,7 +273,7 @@ class ConfigureUrlsTestCase(test.TestCase):
     def test_no_index_view(self):
         '''Test the index view functionality, if it's not used.'''
         self.create_urlconf(['django_autoconfig.tests.app_urls'])
-        with self.assertRaises(django.core.urlresolvers.Resolver404):
+        with self.assertRaises(urlresolvers.Resolver404):
             resolve('/', urlconf=self).func
 
     @unittest.skipIf(django.VERSION < (1, 6), 'AUTOCONFIG_INDEX_VIEW needs Django >= 1.6')
@@ -285,7 +293,7 @@ class ConfigureUrlsTestCase(test.TestCase):
             },
         )
         resolve('/index/', urlconf=self)
-        with self.assertRaises(django.core.urlresolvers.Resolver404):
+        with self.assertRaises(urlresolvers.Resolver404):
             resolve('/django-autoconfig.tests.app-urls/index/', urlconf=self)
 
     def test_url_prefixes(self):
