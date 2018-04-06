@@ -53,15 +53,42 @@ class ConfigureSettingsTestCase(test.TestCase):
         autoconfig.configure_settings(self.settings_dict)
         self.assertEqual(self.settings_dict['NEW_LIST_SETTING'], [1, 2, 3])
 
-    def test_list_setting_from_defaults(self):
+    @unittest.skipIf(django.VERSION >= (2, 0), 'MIDDLEWARE_CLASSES setting was removed in Django 2.0')
+    def test_list_setting_from_defaults_django_1_x(self):
         '''
         A list setting that exists in the django.conf.settings.global_settings
         should merge with the default, not replace it entirely.
+
+        Uses MIDDLEWARE_CLASSES used in Django 1.x.
         '''
         self.settings_dict['INSTALLED_APPS'] = ['django_autoconfig.tests.app_middleware']
         autoconfig.configure_settings(self.settings_dict)
         self.assertIn('my.middleware', self.settings_dict['MIDDLEWARE_CLASSES'])
         self.assertIn('django.middleware.common.CommonMiddleware', self.settings_dict['MIDDLEWARE_CLASSES'])
+
+    @unittest.skipIf(django.VERSION < (2, 0), 'MIDDLEWARE setting is empty by default since Django 2.0')
+    def test_list_setting_from_defaults_django_2_x(self):
+        '''
+        A list setting that exists in the django.conf.settings.global_settings
+        should merge with the default, not replace it entirely.
+
+        Since Django 2.0, MIDDLEWARE_CLASSES is removed and MIDDLEWARE has empty default.
+        Simulate non-empty default by replacing the global default value.
+        '''
+        from django.conf import global_settings
+
+        # Overwrite the default settings.
+        old_middleware = global_settings.MIDDLEWARE
+        global_settings.MIDDLEWARE = ['django.middleware.common.CommonMiddleware']
+
+        try:
+            self.settings_dict['INSTALLED_APPS'] = ['django_autoconfig.tests.app_middleware']
+            autoconfig.configure_settings(self.settings_dict)
+            self.assertIn('my.middleware', self.settings_dict['MIDDLEWARE'])
+            self.assertIn('django.middleware.common.CommonMiddleware', self.settings_dict['MIDDLEWARE'])
+        finally:
+            # Restore default settings to its original value.
+            global_settings.MIDDLEWARE = old_middleware
 
     def test_no_autoconfig(self):
         '''
