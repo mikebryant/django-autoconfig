@@ -303,13 +303,27 @@ class ConfigureUrlsTestCase(test.TestCase):
         with self.assertRaises(urlresolvers.Resolver404):
             resolve('/', urlconf=self).func
 
-    @unittest.skipIf(django.VERSION < (1, 6), 'AUTOCONFIG_INDEX_VIEW needs Django >= 1.6')
-    def test_broken_index_view(self):
-        '''Test the index view functionality with a broken view.'''
+    @unittest.skipIf(django.VERSION < (1, 6) or django.VERSION >= (2, 0),
+                     'AUTOCONFIG_INDEX_VIEW needs Django >= 1.6; '
+                     'Django 2.0 does not silence the NoReverseMatch exception if the pattern does not exist')
+    def test_broken_index_view_django_1_6_to_1_11(self):
+        '''Test the index view functionality with a broken view. Works for Django versions between 1.6 and 1.11.'''
         self.create_urlconf([], index_view='does-not-exist')
         view = resolve('/', urlconf=self).func
         response = view(test.RequestFactory().get(path='/'))
         self.assertEqual(response.status_code, 410)
+
+    @unittest.skipIf(django.VERSION < (2, 0),
+                     'Django 2.0 does not silence the NoReverseMatch exception if the pattern does not exist')
+    def test_broken_index_view_django_2_x(self):
+        '''
+        Test the index view functionality with a broken view.
+        In Django 2.0, NoReverseMatch exception is no longer silenced.
+        '''
+        self.create_urlconf([], index_view='does-not-exist')
+        view = resolve('/', urlconf=self).func
+        with self.assertRaises(urlresolvers.NoReverseMatch):
+            view(test.RequestFactory().get(path='/'))
 
     def test_url_prefix_blank(self):
         '''Test the url prefix mapping works for blank prefixes.'''
