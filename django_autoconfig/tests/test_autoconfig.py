@@ -6,8 +6,14 @@ from django_autoconfig import autoconfig
 
 import copy
 from django.core.exceptions import ImproperlyConfigured
-import django.core.urlresolvers
-from django.core.urlresolvers import resolve
+import django
+try:
+    from django.core import urlresolvers
+    from django.core.urlresolvers import resolve
+except ImportError:
+    from django import urls as urlresolvers
+    from django.urls import resolve
+
 from django import test
 
 if django.VERSION < (1, 7):
@@ -47,15 +53,42 @@ class ConfigureSettingsTestCase(test.TestCase):
         autoconfig.configure_settings(self.settings_dict)
         self.assertEqual(self.settings_dict['NEW_LIST_SETTING'], [1, 2, 3])
 
-    def test_list_setting_from_defaults(self):
+    @unittest.skipIf(django.VERSION >= (2, 0), 'MIDDLEWARE_CLASSES setting was removed in Django 2.0')
+    def test_list_setting_from_defaults_django_1_x(self):
         '''
         A list setting that exists in the django.conf.settings.global_settings
         should merge with the default, not replace it entirely.
+
+        Uses MIDDLEWARE_CLASSES used in Django 1.x.
         '''
         self.settings_dict['INSTALLED_APPS'] = ['django_autoconfig.tests.app_middleware']
         autoconfig.configure_settings(self.settings_dict)
         self.assertIn('my.middleware', self.settings_dict['MIDDLEWARE_CLASSES'])
         self.assertIn('django.middleware.common.CommonMiddleware', self.settings_dict['MIDDLEWARE_CLASSES'])
+
+    @unittest.skipIf(django.VERSION < (2, 0), 'MIDDLEWARE setting is empty by default since Django 2.0')
+    def test_list_setting_from_defaults_django_2_x(self):
+        '''
+        A list setting that exists in the django.conf.settings.global_settings
+        should merge with the default, not replace it entirely.
+
+        Since Django 2.0, MIDDLEWARE_CLASSES is removed and MIDDLEWARE has empty default.
+        Simulate non-empty default by replacing the global default value.
+        '''
+        from django.conf import global_settings
+
+        # Overwrite the default settings.
+        old_middleware = global_settings.MIDDLEWARE
+        global_settings.MIDDLEWARE = ['django.middleware.common.CommonMiddleware']
+
+        try:
+            self.settings_dict['INSTALLED_APPS'] = ['django_autoconfig.tests.app_middleware']
+            autoconfig.configure_settings(self.settings_dict)
+            self.assertIn('my.middleware', self.settings_dict['MIDDLEWARE'])
+            self.assertIn('django.middleware.common.CommonMiddleware', self.settings_dict['MIDDLEWARE'])
+        finally:
+            # Restore default settings to its original value.
+            global_settings.MIDDLEWARE = old_middleware
 
     def test_no_autoconfig(self):
         '''
@@ -188,7 +221,7 @@ class ConfigureSettingsTestCase(test.TestCase):
         of the url prior to finishing the settings.
         '''
         self.triggered = False
-        autoconfig.merge_dictionaries({'LOGIN_URL': '/login/'}, {'LOGIN_URL': django.core.urlresolvers.reverse_lazy('does.not.exist')})
+        autoconfig.merge_dictionaries({'LOGIN_URL': '/login/'}, {'LOGIN_URL': urlresolvers.reverse_lazy('does.not.exist')})
         self.assertFalse(self.triggered)
 
     def test_environment_settings(self):
@@ -238,7 +271,9 @@ class ConfigureUrlsTestCase(test.TestCase):
     def create_urlconf(self, apps, **kwargs):
         '''Create a urlconf from a list of apps.'''
         self.urlpatterns = autoconfig.configure_urls(apps, **kwargs)
-        django.core.urlresolvers._resolver_cache = {}
+        # The following line previously set urlresolvers._resolver_cache to {}, but _resolver_cache is not available
+        # since Django 1.7. Using urlresolvers.clear_url_caches() is better way of clearing the cache.
+        urlresolvers.clear_url_caches()
 
     def test_urls(self):
         '''Test a simple url autoconfiguration.'''
@@ -248,13 +283,13 @@ class ConfigureUrlsTestCase(test.TestCase):
     def test_blank_urls(self):
         '''Test a url autoconfiguration with an app with a blank urls.py.'''
         self.create_urlconf(['django_autoconfig.tests.app_urls', 'django_autoconfig.tests.app_blank_urls'])
-        with self.assertRaises(django.core.urlresolvers.Resolver404):
+        with self.assertRaises(urlresolvers.Resolver404):
             resolve('/django-autoconfig.tests.app-blank-urls/index/', urlconf=self)
 
     def test_missing_app_urls(self):
         '''Test a url autoconfiguration with an app without urls.'''
         self.create_urlconf(['django_autoconfig.tests.app_urls', 'django_autoconfig.tests.app1'])
-        with self.assertRaises(django.core.urlresolvers.Resolver404):
+        with self.assertRaises(urlresolvers.Resolver404):
             resolve('/django-autoconfig.tests.app1/index/', urlconf=self)
 
     def test_broken_urls(self):
@@ -265,16 +300,30 @@ class ConfigureUrlsTestCase(test.TestCase):
     def test_no_index_view(self):
         '''Test the index view functionality, if it's not used.'''
         self.create_urlconf(['django_autoconfig.tests.app_urls'])
-        with self.assertRaises(django.core.urlresolvers.Resolver404):
+        with self.assertRaises(urlresolvers.Resolver404):
             resolve('/', urlconf=self).func
 
-    @unittest.skipIf(django.VERSION < (1, 6), 'AUTOCONFIG_INDEX_VIEW needs Django >= 1.6')
-    def test_broken_index_view(self):
-        '''Test the index view functionality with a broken view.'''
+    @unittest.skipIf(django.VERSION < (1, 6) or django.VERSION >= (2, 0),
+                     'AUTOCONFIG_INDEX_VIEW needs Django >= 1.6; '
+                     'Django 2.0 does not silence the NoReverseMatch exception if the pattern does not exist')
+    def test_broken_index_view_django_1_6_to_1_11(self):
+        '''Test the index view functionality with a broken view. Works for Django versions between 1.6 and 1.11.'''
         self.create_urlconf([], index_view='does-not-exist')
         view = resolve('/', urlconf=self).func
         response = view(test.RequestFactory().get(path='/'))
         self.assertEqual(response.status_code, 410)
+
+    @unittest.skipIf(django.VERSION < (2, 0),
+                     'Django 2.0 does not silence the NoReverseMatch exception if the pattern does not exist')
+    def test_broken_index_view_django_2_x(self):
+        '''
+        Test the index view functionality with a broken view.
+        In Django 2.0, NoReverseMatch exception is no longer silenced.
+        '''
+        self.create_urlconf([], index_view='does-not-exist')
+        view = resolve('/', urlconf=self).func
+        with self.assertRaises(urlresolvers.NoReverseMatch):
+            view(test.RequestFactory().get(path='/'))
 
     def test_url_prefix_blank(self):
         '''Test the url prefix mapping works for blank prefixes.'''
@@ -285,7 +334,7 @@ class ConfigureUrlsTestCase(test.TestCase):
             },
         )
         resolve('/index/', urlconf=self)
-        with self.assertRaises(django.core.urlresolvers.Resolver404):
+        with self.assertRaises(urlresolvers.Resolver404):
             resolve('/django-autoconfig.tests.app-urls/index/', urlconf=self)
 
     def test_url_prefixes(self):
