@@ -5,7 +5,7 @@ from django_autoconfig.version import __VERSION__
 import sys
 
 INSTALL_REQUIRES = [
-    'django < 2.1',
+    'django < 2.3'
 ]
 
 if sys.version_info < (2, 7):
@@ -21,8 +21,8 @@ setup(
     author_email='mike@mikebryant.me.uk',
     install_requires=INSTALL_REQUIRES,
     include_package_data=True,
-    test_suite           = 'setuptest.setuptest.SetupTestSuite',
-    tests_require        = ['django-setuptest>=0.2'],
+    test_suite='setuptest.setuptest.SetupTestSuite',
+    tests_require=['django-setuptest>=0.2'],
     url='https://github.com/mikebryant/django-autoconfig',
     classifiers=[
         'Development Status :: 3 - Alpha',
@@ -37,5 +37,7 @@ setup(
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
     ],
 )

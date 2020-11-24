@@ -6,6 +6,7 @@ python:
 - 3.4
 - 3.5
 - 3.6
+- 3.7
 - pypy
 - pypy3.3-5.5-alpha
 - pypy3.5-5.10.1
@@ -18,6 +19,7 @@ env:
 - DJANGO=1.10
 - DJANGO=1.11
 - DJANGO=2.0
+- DJANGO=2.2
 install:
 - pip install -q gitversion
 - pip install -q Django==$DJANGO
@@ -73,8 +75,10 @@ matrix:
     env: DJANGO=1.9
   - python: 3.6
     env: DJANGO=1.10
+  - python: 3.7
+    env: DJANGO=2.2
   - python: pypy
-    env: DJANGO=2.0
+    env: DJANGO=2.2
   - python: pypy3.3-5.5-alpha
     env: DJANGO=1.4.15
   - python: pypy3.3-5.5-alpha
