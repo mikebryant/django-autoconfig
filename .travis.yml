@@ -1,14 +1,11 @@
 language: python
 python:
-- 2.6
 - 2.7
-- 3.3
 - 3.4
 - 3.5
 - 3.6
 - 3.7
 - pypy
-- pypy3.3-5.5-alpha
 - pypy3.5-5.10.1
 env:
 - DJANGO=1.4.15
@@ -17,9 +14,9 @@ env:
 - DJANGO=1.8
 - DJANGO=1.9
 - DJANGO=1.10
-- DJANGO=1.11
+- DJANGO=1.11.24
 - DJANGO=2.0
-- DJANGO=2.2
+- DJANGO=2.2.17
 install:
 - pip install -q gitversion
 - pip install -q Django==$DJANGO
@@ -31,32 +28,14 @@ after_success:
 - coveralls
 matrix:
   exclude:
-  - python: 2.6
-    env: DJANGO=1.7
-  - python: 2.6
-    env: DJANGO=1.8
-  - python: 2.6
-    env: DJANGO=1.9
-  - python: 2.6
-    env: DJANGO=1.10
-  - python: 2.6
-    env: DJANGO=1.11
-  - python: 2.6
-    env: DJANGO=2.0
   - python: 2.7
     env: DJANGO=2.0
-  - python: 3.3
-    env: DJANGO=1.4.15
-  - python: 3.3
-    env: DJANGO=1.9
-  - python: 3.3
-    env: DJANGO=1.10
-  - python: 3.3
-    env: DJANGO=1.11
-  - python: 3.3
-    env: DJANGO=2.0
+  - python: 2.7
+    env: DJANGO=2.2.17
   - python: 3.4
     env: DJANGO=1.4.15
+  - python: 3.4
+    env: DJANGO=2.2.17
   - python: 3.5
     env: DJANGO=1.4.15
   - python: 3.5
@@ -76,19 +55,21 @@ matrix:
   - python: 3.6
     env: DJANGO=1.10
   - python: 3.7
-    env: DJANGO=2.2
-  - python: pypy
-    env: DJANGO=2.2
-  - python: pypy3.3-5.5-alpha
     env: DJANGO=1.4.15
-  - python: pypy3.3-5.5-alpha
+  - python: 3.7
+    env: DJANGO=1.6.7
+  - python: 3.7
+    env: DJANGO=1.7
+  - python: 3.7
+    env: DJANGO=1.8
+  - python: 3.7
     env: DJANGO=1.9
-  - python: pypy3.3-5.5-alpha
+  - python: 3.7
     env: DJANGO=1.10
-  - python: pypy3.3-5.5-alpha
-    env: DJANGO=1.11
-  - python: pypy3.3-5.5-alpha
+  - python: pypy
     env: DJANGO=2.0
+  - python: pypy
+    env: DJANGO=2.2.17
   - python: pypy3.5-5.10.1
     env: DJANGO=1.4.15
   - python: pypy3.5-5.10.1
@@ -105,4 +86,4 @@ deploy:
     all_branches: true
     repo: mikebryant/django-autoconfig
     tags: true
-    condition: "$DJANGO = 1.11"
+    condition: "$DJANGO = 1.11.24"
