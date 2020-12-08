@@ -12,7 +12,7 @@ if sys.version_info < (2, 7):
     INSTALL_REQUIRES.append('importlib')
 
 setup(
-    name='django-autoconfig',
+    name='nandan-django-autoconfig',
     version=__VERSION__,
     packages=find_packages(),
     description='Automatic configuration of Django projects based on the application requirements.',
@@ -23,7 +23,7 @@ setup(
     include_package_data=True,
     test_suite           = 'setuptest.setuptest.SetupTestSuite',
     tests_require        = ['django-setuptest>=0.2'],
-    url='https://github.com/mikebryant/django-autoconfig',
+    url='https://github.com/nandanprac/django-autoconfig',
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
