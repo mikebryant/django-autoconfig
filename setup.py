@@ -12,7 +12,7 @@ if sys.version_info < (2, 7):
     INSTALL_REQUIRES.append('importlib')
 
 setup(
-    name='nandan-django-autoconfig',
+    name='django-autoconfig',
     version=__VERSION__,
     packages=find_packages(),
     description='Automatic configuration of Django projects based on the application requirements.',
